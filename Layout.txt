@@ -42,10 +42,13 @@ Assumptions:
     The output file of the developer application is going to be a .txt OR possibly a .csv file
         If it is a CSV File, the contents of the file could also be entirely different to what I could be expecting
         The same is true for a txt file, rather than being separated by newlines, the dates could be separated by spaces.
-    Don't quite know how the Z works in the ISO-8601 format, would it be a "." after the ss? or a hypen (-)?
+        I assumed that I would have to validate that each date was legitimate, however, upon closer reading, that is not the case.
+        Assuming that the only type of validation that I would need to do is format checking each date in the datasets. 
 
 Challenges:
     Figuring out the ISO-8601 Format, different sources online state different things for the last part of the timezone, however, I see that it's explicitly stated above.
+    Unsure of how to proceed with validation of output, what type of validation do I need to provide if the output data is already expected to be valid through my program even if the date-time is not legitimate?
+    Don't quite know how the Z works in the ISO-8601 format, would it be a "." after the ss? or a hypen (-)?
 
 
 1. Initial thoughts are that since semantic validation of the DT Value was optional, there could be invalid date-times that could be in the unique/non-unique files.
@@ -57,8 +60,8 @@ Challenges:
         "2018-09-25T09:57:00+07:00" - Indicates that the time is 7 hours(?) ahead from my understanding
         "2022-10-15T08:33:12-6:00" - Indicates that the time is 6 hours behind from my understanding
 
-2. Would have to validate that the day actually exists for the calendar month, or that the day exists for the year (ex: leap year / 02/29, 02/29 cannot exist in years that arent leap) 
-3. Would also have to validate that the time matches. There arent 61 seconds in a minute. 
+
+2. Would also have to validate that the time matches. There arent 61 seconds in a minute. 
     Specified upper and lower bounds are listed above in the problem description:
         • YYYY = four-digit year
         • MM = two-digit month (01 through 12)                              1 to 12
@@ -69,7 +72,17 @@ Challenges:
         • TZD = time zone designator (“Z” for GMT or +hh:mm or -hh:mm)      Z for GMT, +hh:mm or -hh:mm as specified.
 
         Can easily do semantic checking of the YYYY-MM-DD portion by splitting each date and then checking from there, same applies to the times. 
-4. Should I test to see if the dates can be passed to Python's datetime function?
-5. Why provide a unique and nonunique data set for testing? Wouldnt the developer ensure that the output is 100% unique values?
-6. Can there be instances where the output has unique values, but for some reason, two or multiple values turn out to be the same in some way?
-7. Both datasets which are provided by me CAN be unique, but that doesn't mean they are also validated. Sure, all the values are unique, but what if they arent valid datetimes?
+3. Should I test to see if the dates can be passed to Python's datetime function?
+4. Why provide a unique and nonunique data set for testing? Wouldnt the developer ensure that the output has 100% unique values?
+5. Can there be instances where the output has unique values, but for some reason, two or multiple values turn out to be the same in some way?
+6. Both datasets which are provided by me CAN be unique, but that doesn't mean they are also validated. Sure, all the values are unique, but what if they arent valid datetimes?
+7. All entries from the data should be UNIQUE, and VALID date-time values according to spec.
+8. No need to check for uniqueness in either file, since we know that One file has unique values, and one file DOESNT contain unique values.
+9. If all I need to do is validate the output, why not just check to see if two hyphens exist within the date-time value, and see if there is a valid TZD or Z at the end?
+10. Cant use high-level validation logic, so that means no datetime in python :(
+11. I believe I understand the problem a little bit more now.
+        Even If i was given an invalid date, I just need to validate that the date is in the ISO-8601 Format. That makes much more sense to me.
+        YYYY-MM-DDThh:mm:ssTZD is the format that was given to me, I just need to ensure that all the dates follow this format
+
+        "06-2000-..." would not be the ISO-8601 format which hence would mean that the date-time is invalid. 
+        The non-legitimate date given in the spec is still valid because it is in the ISO-8601 format. 
