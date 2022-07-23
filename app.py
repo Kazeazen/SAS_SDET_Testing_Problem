@@ -1,9 +1,8 @@
-
 '''
 Author: James Thomason
 Date: 7/21/2022
 
-Problem Description
+Problem Description:
 
 A developer has implemented a program that reads a large list of date-time values from a file and writes to a separate file the list of unique, valid date-time values (no duplicates). A valid date-time value matches the following format (ISO 8601):
 
@@ -33,3 +32,40 @@ Your job is to validate the output of this application.
 * You will want to discuss assumptions you made and challenges you encountered.
 * A more comprehensive solution is preferred, but the focus is on how you demonstrate your understanding of the solution and defend your design and implementation decisions.
 '''
+class DateTimeValidation():
+
+    def load_file(self, file):
+        self.data = []
+        with open(file, "r") as open_file:
+                for line in open_file:
+                    self.data.append(line.strip())
+        print(self.data)
+
+    def unique_or_not(self, iterable):
+        # This function SHOULD return true for the data_nodups.txt file and false for the data_dupes.txt file.
+        uniques = {}
+        for date_time in iterable:
+            if date_time not in uniques:
+                uniques[date_time] = 1
+            else:
+                return False
+        return True
+
+    def in_iso8601_format(self,datetime_string):
+        # Most of the format checking work will be done in this function.
+        pass
+
+
+# DateTimeValidation("data/data_nodups.txt")
+
+def main():
+    dtValid1 = DateTimeValidation()
+    dtValid1.load_file("data/data_nodups.txt")
+
+if __name__ == "__main__":
+    main()
+
+
+
+
+
