@@ -49,7 +49,7 @@ Challenges:
     Figuring out the ISO-8601 Format, different sources online state different things for the last part of the timezone, however, I see that it's explicitly stated above.
     Unsure of how to proceed with validation of output, what type of validation do I need to provide if the output data is already expected to be valid through my program even if the date-time is not legitimate?
     Don't quite know how the Z works in the ISO-8601 format, would it be a "." after the ss? or a hypen (-)?
-
+    Difficult to decide between nested conditions or just explicit conditions one after the other
 
 1. Initial thoughts are that since semantic validation of the DT Value was optional, there could be invalid date-times that could be in the unique/non-unique files.
 
