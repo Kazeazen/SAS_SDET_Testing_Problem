@@ -33,14 +33,11 @@ Your job is to validate the output of this application.
 * A more comprehensive solution is preferred, but the focus is on how you demonstrate your understanding of the solution and defend your design and implementation decisions.
 '''
 
-from datetime import datetime
-
-
 class DateTimeValidation():
 
     def load_file(self, file):
         '''
-        Test to see if the file loads correctly
+        
         '''
         self.data = []
         with open(file, "r") as open_file:
@@ -50,6 +47,7 @@ class DateTimeValidation():
 
     def unique_or_not(self, iterable):
         # This function SHOULD return true for the data_nodups.txt file and false for the data_dupes.txt file.
+
         uniques = {}
         for date_time in iterable:
             if date_time not in uniques:
@@ -60,7 +58,7 @@ class DateTimeValidation():
 
 
     def in_iso8601_format(self, datetime_string):
-        # Most of the format checking work will be done in this function.
+        # Most of the format checking work will be done in this function with the help of format_checker_helper.
         '''
         ISO-8601 Format for datetimes
         • YYYY = four-digit year
@@ -74,43 +72,47 @@ class DateTimeValidation():
         EX: "2022-10-15T08:33:12-06:00"
         '''
         
-        # Ensuring that at the very minimum, both hyphens for the iso-8601 format are in the correct spot 
-        # as well as containing/having T in the string at the correct position
-        if "T" not in datetime_string or datetime_string[10] != "T" or datetime_string[4] != "-" or datetime_string[7] != "-": 
+        if datetime_string[10] != "T" or datetime_string[4] != "-" or datetime_string[7] != "-" \
+            or datetime_string[13] != ":" or datetime_string[16] != ":": 
             return False
         
-        if len(datetime_string) == 24:
-            if datetime_string[-1] == "Z":
-                return self.format_checker_helper(datetime_string)
-
-        if len(datetime_string) == 25:
-            if datetime_string[-6] in ["-", "+"]:
-                return self.format_checker_helper(datetime_string)
-
+        if len(datetime_string) == 20 or len(datetime_string) == 25:
+            return self.format_checker_helper(datetime_string)
         return False
     
     def format_checker_helper(self, datetime_string):
     
         # Grabbing the individual components of the format for easier referencing
         try:
-            year = datetime_string[:4]
-            month = datetime_string[5:7] if self.range_checker(int(datetime_string[5:7]), 1, 12) else -1 # Check between 1 and 12
-            day = datetime_string[8:10] if self.range_checker(int(datetime_string[8:10]), 1, 31) else -1 # Check between 1 and 31
-        except ValueError:
+            year = int(datetime_string[:4]) # Except should catch the valueError if anything besides a number is in the year splice.
+            month = int(datetime_string[5:7]) if self.range_checker(int(datetime_string[5:7]), 1, 12) else -1 
+            day = int(datetime_string[8:10]) if self.range_checker(int(datetime_string[8:10]), 1, 31) else -1 
+            hour = int(datetime_string[11:13]) if self.range_checker(int(datetime_string[11:13]), 0, 23) else -1 
+            minutes = int(datetime_string[14:16]) if self.range_checker(int(datetime_string[14:16]), 0, 59) else -1
+            seconds = int(datetime_string[17:19]) if self.range_checker(int(datetime_string[17:19]), 0, 59) else -1
+
+            # Explicitly checking the datetimes with 25 len because there is the added +/-hh:mm which would require boundary checks.
+            if len(datetime_string) == 25:
+                if datetime_string[19] not in ("+", "-"):
+                    return False
+                timezone_hour = int(datetime_string[20:22]) if self.range_checker(int(datetime_string[20:22]), 0, 23) else -1
+                timezone_minutes = int(datetime_string[24:]) if self.range_checker(int(datetime_string[24:]), 0, 59) else -1
+
+                if -1 in (timezone_hour, timezone_minutes):
+                    return False
+        except ValueError as e: # Incase there is something else besides an int inside of the array splice for any conversion, then we know that the format is invalid. 
+            print(e)
             return False
         else:
-            if month == -1 or day == -1: # Quick check to ensure that if either are false, immediately return False
+            if -1 in (month, day, hour, minutes, seconds):
                 return False
-            elif year.isnumeric() and month != -1 and day != -1:
+            else:
                 return True
     
-
-        
-        # Surround in a try except? return False if the number cannot be converted to an integer? should I only try to convert month and day to ints?
     def range_checker(self, num, a, b):
         if b < a:
             a, b = b, a
-        if num in range(a,b):
+        if num in range(a,b + 1):
             return True
         else:
             return False
@@ -120,17 +122,23 @@ class DateTimeValidation():
 def main():
     dtValid1 = DateTimeValidation()
     # Valid date-times
-    '''print(dtValid1.in_iso8601_format("2022-10-15T08:33:12-06:00"))
-    print(dtValid1.in_iso8601_format("2022-10-15T09:33:15.343Z"))
-    print(dtValid1.in_iso8601_format("2019-05-26T11:59:32+03:00"))
+    print("1: ",dtValid1.in_iso8601_format("2022-10-15T08:33:12-06:00"))
+    print("2: ",dtValid1.in_iso8601_format("2022-10-15T09:33:15Z"))
+    print("3: ",dtValid1.in_iso8601_format("2019-05-26T11:59:32+03:00"))
+    print("5: ",dtValid1.in_iso8601_format("2065-01-01T08:54:33Z"))
     # Invalid Date-Times
+    print()
+    print("Expected Falses:")
     print(dtValid1.in_iso8601_format("2022-10-15T08:33:12-06:001111"))
-    print(dtValid1.in_iso8601_format("2022-10-15T09:33:15.343"))
-    print(dtValid1.in_iso8601_format("2019-05-26T11:59:32 03:00"))
-
+    print(dtValid1.in_iso8601_format("2022-10-15T09:33:15.343")) # False
+    print(dtValid1.in_iso8601_format("2019-05-26T11:59:32 03:00")) # False
+    print(dtValid1.in_iso8601_format("2065-01-01T08:54:61-04:00")) # False
+    print(dtValid1.in_iso8601_format("2064-06-29T09:55:22 05:00")) # False, all but the +/- for the hh:mm are included
+    print()
+    print("Expected Falses, datetimes in different formats")
     # Valid date times in different formats.
-    print(dtValid1.in_iso8601_format("06-15-2025T08:54:33-04:00"))'''
-    print(dtValid1.in_iso8601_format("2065-01-01T08:54:33-04:00"))
+    print(dtValid1.in_iso8601_format("06-15-2025T08:54:33-04:00"))
+    
 
 if __name__ == "__main__":
     main()

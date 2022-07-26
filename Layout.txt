@@ -44,6 +44,7 @@ Assumptions:
         The same is true for a txt file, rather than being separated by newlines, the dates could be separated by spaces.
         I assumed that I would have to validate that each date was legitimate, however, upon closer reading, that is not the case.
         Assuming that the only type of validation that I would need to do is format checking each date in the datasets. 
+        +/-hh:mm upper and lower bounds for either hh or mm were never specified, assumed that hh has a range of 00 to 23, and mm has a range of 00 to 59
 
 Challenges:
     Figuring out the ISO-8601 Format, different sources online state different things for the last part of the timezone, however, I see that it's explicitly stated above.
