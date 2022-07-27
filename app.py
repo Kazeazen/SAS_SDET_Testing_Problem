@@ -37,7 +37,11 @@ class DateTimeValidation():
 
     def load_file(self, file):
         '''
-        
+        Loads a specific file in for parsing and takes the data in the file line-by-line to be stored within the class
+        @params: 
+            file - the file to be opened and read
+        @returns: 
+            None
         '''
         self.data = []
         try:
@@ -50,7 +54,13 @@ class DateTimeValidation():
 
     def unique_or_not(self, iterable) -> bool:
         '''
-        This method is only meant to be used on self.data to ensure that all the data that was loaded in from self.load_file is unique. 
+        Determines whether an iterable structure has only unique values or not.
+        This method is only meant to be used on self.data to ensure that all the data that was loaded in from self.load_file is unique.
+        @params: 
+            iterable - a data structure that can be iterated over
+        @returns: 
+            True - if iterable has only unique values
+            False - if iterable doesn't have unique values
         '''
         
         if len(iterable) == 0 or not iterable:
@@ -65,8 +75,8 @@ class DateTimeValidation():
 
 
     def in_iso8601_format(self, datetime_string: str) -> bool:
-        # Most of the format checking work will be done in this function with the help of format_checker_helper.
         '''
+        Checks whether or not a datetime String is in the ISO-8601 Format. Format Rules listed below.
         ISO-8601 Format for datetimes
         • YYYY = four-digit year
         • MM = two-digit month (01 through 12)
@@ -77,6 +87,11 @@ class DateTimeValidation():
         • TZD = time zone designator (“Z” for GMT or +hh:mm or -hh:mm)
 
         EX: "2022-10-15T08:33:12-06:00"
+
+        @params: datetime_string - string that is going to be checked for iso-8601 formatting
+        @returns: 
+            True - if the string matches all the conditions for the iso-8601 format
+            False - if the string doesn't match or fails to match the iso-8601 format
         '''
 
         if len(datetime_string) < 20:
@@ -92,7 +107,6 @@ class DateTimeValidation():
     
     def format_checker_helper(self, datetime_string: str) -> bool:
     
-        # Grabbing the individual components of the format for easier referencing
         try:
             year = int(datetime_string[:4]) # Except should catch the valueError if anything besides a number is in the year splice.
             month = int(datetime_string[5:7]) if self.range_checker(int(datetime_string[5:7]), 1, 12) else -1 
@@ -101,7 +115,6 @@ class DateTimeValidation():
             minutes = int(datetime_string[14:16]) if self.range_checker(int(datetime_string[14:16]), 0, 59) else -1
             seconds = int(datetime_string[17:19]) if self.range_checker(int(datetime_string[17:19]), 0, 59) else -1
 
-            # Explicitly checking the datetimes with 25 len because there is the added +/-hh:mm which would require boundary checks.
             if len(datetime_string) == 25:
                 if datetime_string[19] not in ("+", "-"):
                     return False
@@ -110,7 +123,7 @@ class DateTimeValidation():
 
                 if -1 in (timezone_hour, timezone_minutes):
                     return False
-        except ValueError as e: # Incase there is something else besides an int inside of the array splice for any conversion, then we know that the format is invalid. 
+        except ValueError as e:  
             print(e)
             return False
         else:
@@ -120,6 +133,16 @@ class DateTimeValidation():
                 return True
     
     def range_checker(self, num, a, b):
+        '''
+        Checks whether or not a number is within a certain upper and lower boundary.
+        @params:
+            num: number that is being checked
+            a: first number that is either the lower or upper boundary
+            b: second number that is either the lower or upper boundary
+        @returns:
+            True - if number in range of a,b
+            False - if number not in range of a,b
+        '''
         if b < a:
             a, b = b, a
         if num in range(a,b + 1):
@@ -127,12 +150,10 @@ class DateTimeValidation():
         else:
             return False
 
-# DateTimeValidation("data/data_nodups.txt")
-
 def main():
     dtValid1 = DateTimeValidation()
     # Valid date-times
-    print("Valid Date-times:")
+    '''print("Valid Date-times:")
     print("1: 222-10-15T08:33:12-06:00 | ",dtValid1.in_iso8601_format("2022-10-15T08:33:12-06:00"))
     print("2: 2022-10-15T09:33:15Z | ",dtValid1.in_iso8601_format("2022-10-15T09:33:15Z"))
     print("3: 2019-05-26T11:59:32+03:00 | ",dtValid1.in_iso8601_format("2019-05-26T11:59:32+03:00"))
@@ -151,7 +172,7 @@ def main():
     # Valid date times in different formats.
     print("Expected Falses, datetimes in different formats")
     print("1: ",dtValid1.in_iso8601_format("06-15-2025T08:54:33-04:00"))
-    print("2: ", dtValid1.in_iso8601_format(""))
+    print("2: ", dtValid1.in_iso8601_format(""))'''
 
 if __name__ == "__main__":
     main()
