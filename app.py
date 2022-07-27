@@ -48,7 +48,7 @@ class DateTimeValidation():
             with open(file, "r") as open_file:
                     for line in open_file:
                         self.data.append(line.strip())
-        except FileNotFoundError:
+        except:
             self.data = []
         
 
@@ -93,6 +93,8 @@ class DateTimeValidation():
             True - if the string matches all the conditions for the iso-8601 format
             False - if the string doesn't match or fails to match the iso-8601 format
         '''
+        if datetime_string is None:
+            return False
 
         if len(datetime_string) < 20:
             return False
@@ -108,7 +110,7 @@ class DateTimeValidation():
     def format_checker_helper(self, datetime_string: str) -> bool:
     
         try:
-            year = int(datetime_string[:4]) # Except should catch the valueError if anything besides a number is in the year splice.
+            year = int(datetime_string[:4]) # Except should catch ValueError if anything besides a number is in the year splice.
             month = int(datetime_string[5:7]) if self.range_checker(int(datetime_string[5:7]), 1, 12) else -1 
             day = int(datetime_string[8:10]) if self.range_checker(int(datetime_string[8:10]), 1, 31) else -1 
             hour = int(datetime_string[11:13]) if self.range_checker(int(datetime_string[11:13]), 0, 23) else -1 
@@ -123,8 +125,7 @@ class DateTimeValidation():
 
                 if -1 in (timezone_hour, timezone_minutes):
                     return False
-        except ValueError as e:  
-            print(e)
+        except:
             return False
         else:
             if -1 in (month, day, hour, minutes, seconds):
