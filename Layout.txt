@@ -48,9 +48,10 @@ Assumptions:
 
 Challenges:
     Figuring out the ISO-8601 Format, different sources online state different things for the last part of the timezone, however, I see that it's explicitly stated above.
-    Unsure of how to proceed with validation of output, what type of validation do I need to provide if the output data is already expected to be valid through my program even if the date-time is not legitimate?
     Don't quite know how the Z works in the ISO-8601 format, would it be a "." after the ss? or a hypen (-)?
     Difficult to decide between nested conditions or just explicit conditions one after the other
+    Mostly just trying to figure out any edge cases that could occur when validating any of the datetime data
+    No regex parsing restricts me to not being able to use re.split which would make it a little easier being able to split on multiple delimiters, rather than having to splice the string over and over.
 
 1. Initial thoughts are that since semantic validation of the DT Value was optional, there could be invalid date-times that could be in the unique/non-unique files.
 
@@ -87,3 +88,4 @@ Challenges:
 
         "06-2000-..." would not be the ISO-8601 format which hence would mean that the date-time is invalid. 
         The non-legitimate date given in the spec is still valid because it is in the ISO-8601 format. 
+12. I could cache the datetimes that ARE in the proper format in case any duplicates ever come up from any further data.

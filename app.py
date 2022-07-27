@@ -40,14 +40,21 @@ class DateTimeValidation():
         
         '''
         self.data = []
-        with open(file, "r") as open_file:
-                for line in open_file:
-                    self.data.append(line.strip())
+        try:
+            with open(file, "r") as open_file:
+                    for line in open_file:
+                        self.data.append(line.strip())
+        except FileNotFoundError:
+            self.data = []
         
 
-    def unique_or_not(self, iterable):
-        # This function SHOULD return true for the data_nodups.txt file and false for the data_dupes.txt file.
-
+    def unique_or_not(self, iterable) -> bool:
+        '''
+        This method is only meant to be used on self.data to ensure that all the data that was loaded in from self.load_file is unique. 
+        '''
+        
+        if len(iterable) == 0 or not iterable:
+            return False
         uniques = {}
         for date_time in iterable:
             if date_time not in uniques:
@@ -57,7 +64,7 @@ class DateTimeValidation():
         return True
 
 
-    def in_iso8601_format(self, datetime_string):
+    def in_iso8601_format(self, datetime_string: str) -> bool:
         # Most of the format checking work will be done in this function with the help of format_checker_helper.
         '''
         ISO-8601 Format for datetimes
@@ -71,16 +78,19 @@ class DateTimeValidation():
 
         EX: "2022-10-15T08:33:12-06:00"
         '''
-        
+
+        if len(datetime_string) < 20:
+            return False
+
         if datetime_string[10] != "T" or datetime_string[4] != "-" or datetime_string[7] != "-" \
-            or datetime_string[13] != ":" or datetime_string[16] != ":": 
+            or datetime_string[13] != ":" or datetime_string[16] != ":":
             return False
         
         if len(datetime_string) == 20 or len(datetime_string) == 25:
             return self.format_checker_helper(datetime_string)
         return False
     
-    def format_checker_helper(self, datetime_string):
+    def format_checker_helper(self, datetime_string: str) -> bool:
     
         # Grabbing the individual components of the format for easier referencing
         try:
@@ -122,23 +132,26 @@ class DateTimeValidation():
 def main():
     dtValid1 = DateTimeValidation()
     # Valid date-times
-    print("1: ",dtValid1.in_iso8601_format("2022-10-15T08:33:12-06:00"))
-    print("2: ",dtValid1.in_iso8601_format("2022-10-15T09:33:15Z"))
-    print("3: ",dtValid1.in_iso8601_format("2019-05-26T11:59:32+03:00"))
-    print("5: ",dtValid1.in_iso8601_format("2065-01-01T08:54:33Z"))
-    # Invalid Date-Times
+    print("Valid Date-times:")
+    print("1: 222-10-15T08:33:12-06:00 | ",dtValid1.in_iso8601_format("2022-10-15T08:33:12-06:00"))
+    print("2: 2022-10-15T09:33:15Z | ",dtValid1.in_iso8601_format("2022-10-15T09:33:15Z"))
+    print("3: 2019-05-26T11:59:32+03:00 | ",dtValid1.in_iso8601_format("2019-05-26T11:59:32+03:00"))
+    print("5: 2065-01-01T08:54:33Z | ",dtValid1.in_iso8601_format("2065-01-01T08:54:33Z"))
     print()
-    print("Expected Falses:")
-    print(dtValid1.in_iso8601_format("2022-10-15T08:33:12-06:001111"))
-    print(dtValid1.in_iso8601_format("2022-10-15T09:33:15.343")) # False
-    print(dtValid1.in_iso8601_format("2019-05-26T11:59:32 03:00")) # False
-    print(dtValid1.in_iso8601_format("2065-01-01T08:54:61-04:00")) # False
-    print(dtValid1.in_iso8601_format("2064-06-29T09:55:22 05:00")) # False, all but the +/- for the hh:mm are included
-    print()
-    print("Expected Falses, datetimes in different formats")
-    # Valid date times in different formats.
-    print(dtValid1.in_iso8601_format("06-15-2025T08:54:33-04:00"))
     
+    # Invalid Date-Times
+    print("Expected Falses:")
+    print("1: ",dtValid1.in_iso8601_format("2022-10-15T08:33:12-06:001111")) # False, Length is too long
+    print("2: ",dtValid1.in_iso8601_format("2022-10-15T09:33:15.343")) # False, invalid format at end of string
+    print("3: ",dtValid1.in_iso8601_format("2019-05-26T11:59:32 03:00")) # False, no +/- before hh:mm at end of string
+    print("4: ",dtValid1.in_iso8601_format("2065-01-01T08:54:61-04:00")) # False, seconds is out of range between 0-59
+    print("5: ",dtValid1.in_iso8601_format("2064-06-29T09:55:22 05:00")) # False, all but the +/- for the hh:mm are included
+    print()
+    
+    # Valid date times in different formats.
+    print("Expected Falses, datetimes in different formats")
+    print("1: ",dtValid1.in_iso8601_format("06-15-2025T08:54:33-04:00"))
+    print("2: ", dtValid1.in_iso8601_format(""))
 
 if __name__ == "__main__":
     main()
